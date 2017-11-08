@@ -6,4 +6,7 @@
   <packaging>pom</packaging>
   <name>ssmplus</name>
   <description>spring springmvc mybaits dubbox</description>
+  <modules>
+  	<module>ssmplus-entity</module>
+  </modules>
 </project>
