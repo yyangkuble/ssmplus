@@ -3,14 +3,19 @@
   <parent>
     <groupId>com.github.ssmplus</groupId>
     <artifactId>ssmplus-parent</artifactId>
-    <version>3.3.5</version>
+    <version>${ssmplus.version}</version>
   </parent>
   <artifactId>ssmplus-controller</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>com.github.ssmplus</groupId>
   		<artifactId>ssmplus-interface</artifactId>
-  		<version>3.3.5</version>
+  		<version>${ssmplus.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.github.ssmplus</groupId>
+  		<artifactId>ssmplus-entity</artifactId>
+  		<version>${ssmplus.version}</version>
   	</dependency>
   </dependencies>
 </project>

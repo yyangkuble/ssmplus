@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.github.ssmplus</groupId>
     <artifactId>ssmplus-parent</artifactId>
-    <version>3.3.5</version>
+    <version>${ssmplus.version}</version>
   </parent>
   <artifactId>ssmplus-entity</artifactId>
 </project>
