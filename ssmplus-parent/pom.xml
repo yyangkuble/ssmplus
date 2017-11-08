@@ -203,13 +203,14 @@
 				</plugins>
 			</build>
 			<distributionManagement>
+				
 				<snapshotRepository>
 					<id>yyangkuble</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 				</snapshotRepository>
 				<repository>
 					<id>yyangkuble</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 				</repository>
 			</distributionManagement>
 		</profile>
