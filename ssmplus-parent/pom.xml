@@ -8,5 +8,8 @@
   <description>spring springmvc mybaits dubbox</description>
   <modules>
   	<module>ssmplus-entity</module>
+  	<module>ssmplus-interface</module>
+  	<module>ssmplus-service</module>
+  	<module>ssmplus-controller</module>
   </modules>
 </project>
