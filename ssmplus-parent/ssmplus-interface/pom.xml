@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.github.ssmplus</groupId>
     <artifactId>ssmplus-parent</artifactId>
-    <version>${ssmplus.version}</version>
+    <version>3.4.0</version>
   </parent>
   <artifactId>ssmplus-interface</artifactId>
   <dependencies>

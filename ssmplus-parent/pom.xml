@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.ssmplus</groupId>
   <artifactId>ssmplus-parent</artifactId>
-  <version>${ssmplus.version}</version>
+  <version>3.4.0</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
   <description>This is a spring MVC enhancement project, and you can use the Dubbo framework to reduce our development effort by 60%, or even higher</description>
@@ -32,7 +32,7 @@
 	</scm>
   
   <properties>
-  	<ssmplus.version>3.3.9</ssmplus.version>
+  	<ssmplus.version>3.4.0</ssmplus.version>
 	<spring.version>4.2.4.RELEASE</spring.version>
 	<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 	<dubbo.version>2.8.4</dubbo.version>
@@ -59,75 +59,89 @@
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-context</artifactId>	
 		<version>${spring.version}</version>	
+		<optional>true</optional>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-beans</artifactId>	
-		<version>${spring.version}</version>		
+		<version>${spring.version}</version>	
+		<optional>true</optional>	
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-webmvc</artifactId>	
 		<version>${spring.version}</version>		
+		<optional>true</optional>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-aspects</artifactId>
-		<version>${spring.version}</version>			
+		<version>${spring.version}</version>	
+		<optional>true</optional>		
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-context-support</artifactId>	
 		<version>${spring.version}</version>		
+		<optional>true</optional>
 	</dependency>
 	<!-- dubbo相关 -->
 	<dependency>
 		<groupId>com.alibaba</groupId>
 		<artifactId>dubbo</artifactId>	
 		<version>2.8.4</version>
+		<optional>true</optional>
 	</dependency>
 	<dependency>
 		<groupId>org.apache.zookeeper</groupId>
 		<artifactId>zookeeper</artifactId>	
 		<version>${zookeeper.version}</version>
+		<optional>true</optional>
 	</dependency>
 	<dependency>
 		<groupId>com.github.sgroschupf</groupId>
 		<artifactId>zkclient</artifactId>	
 		<version>${zkclient.version}</version>	
+		<optional>true</optional>
 	</dependency>
 	<dependency>
 		<groupId>com.alibaba</groupId>
 		<artifactId>fastjson</artifactId>
-		<version>${fastJson.version}</version>		
+		<version>${fastJson.version}</version>	
+		<optional>true</optional>	
 	</dependency>
 	<dependency>
 		<groupId>javassist</groupId>
 		<artifactId>javassist</artifactId>	
 		<version>${javassist.version}</version>	
+		<optional>true</optional>
 	</dependency>
 	<!-- pagehelper有bug必须在service和web的pom文件里面都要加入依赖 -->
 	<dependency>
 	    <groupId>com.github.pagehelper</groupId>
 	    <artifactId>pagehelper</artifactId>	   
 	    <version>${pagehelper.version}</version>
+	    <optional>true</optional>
 	</dependency>
   	<!-- 通用mapper,会自动依赖 persistence-api-1.0.jar-->
 	<dependency>
 	    <groupId>tk.mybatis</groupId>
 	    <artifactId>mapper</artifactId>
 	    <version>3.4.4</version>
+	    <optional>true</optional>
 	</dependency>	
   	<!-- Mybatis -->
 	<dependency>
 		<groupId>org.mybatis</groupId>
 		<artifactId>mybatis</artifactId>	
 		<version>${mybatis.version}</version>	
+		<optional>true</optional>
 	</dependency>
 	<dependency>
 		<groupId>org.mybatis</groupId>
 		<artifactId>mybatis-spring</artifactId>		
 		<version>${mybatis.spring.version}</version>
+		<optional>true</optional>
 	</dependency>
   
   </dependencies>
