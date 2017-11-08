@@ -15,8 +15,9 @@
 	</licenses>
 	<developers>
 	    <developer>
-	        <name>yyangkuble</name>
+	        <name>宋荣洋</name>
 	        <email>yyangkuble@163.com</email>
+	        <url>https://github.com/yyangkuble</url>
 	        <roles>
 	            <role>developer</role>
 	        </roles>
@@ -30,18 +31,6 @@
 	    <tag>v${project.version}</tag>
 	</scm>
   
-  	<distributionManagement>
-	    <snapshotRepository>
-	        <id>ossrh</id>
-	        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-	    </snapshotRepository>
-	    <repository>
-	        <id>ossrh</id>
-	        <name>Maven Central Staging Repository</name>
-	        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-	    </repository>
-	</distributionManagement>
-  
   <properties>
   	<ssmplus.version>3.3.5</ssmplus.version>
 	<spring.version>4.2.4.RELEASE</spring.version>
@@ -54,6 +43,13 @@
 	<mybatis.spring.version>1.2.2</mybatis.spring.version>
 	<fastJson.version>1.2.28</fastJson.version>	
 	<javassist.version>3.11.0.GA</javassist.version>
+	
+	<version.source-plugin>2.3</version.source-plugin>
+	<version.javadoc-plugin>2.9.1</version.javadoc-plugin>
+	<version.maven-gpg-plugin>1.5</version.maven-gpg-plugin>
+
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   
   <dependencies>
@@ -152,7 +148,72 @@
 
 	</plugins>
   </build>
-  
+  <profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>${version.source-plugin}</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<attach>true</attach>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${version.javadoc-plugin}</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<links>
+								<link>http://docs.oracle.com/javase/7/docs/api</link>
+							</links>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${version.maven-gpg-plugin}</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>yyangkuble</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>yyangkuble</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
   <modules>
   	<module>ssmplus-entity</module>
   	<module>ssmplus-interface</module>
