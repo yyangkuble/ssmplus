@@ -5,8 +5,8 @@
   <version>${ssmplus.version}</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
-  <description>spring springmvc mybaits dubbox</description>
-  
+  <description>This is a spring MVC enhancement project, and you can use the Dubbo framework to reduce our development effort by 60%, or even higher</description>
+  <url>https://github.com/yyangkuble/ssmplus</url>
     <licenses>
 	    <license>
 	        <name>The Apache License, Version 2.0</name>
