@@ -1,5 +1,7 @@
 package yy.service;
 
+import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -310,45 +312,63 @@ public class AppServiceImpl implements AppService {
 		return resultEntity;
 	}
 
-	public AppResult deletebyids(String entityName, Map<String, Object> parameter) {
+	public AppResult deletebyid(String entityName, Map<String, Object> parameter) {
 		AppResult result = new AppResult();
 		Class<?> pojoClass = InitAplication.pojoMap.get(entityName);
+		Field idField = InitAplication.idFieldMap.get(entityName);
 		Mapper mapper = InitAplication.mapperMap.get(pojoClass);
-		String[] ids =null;
-		String idAttrName ="";
-		for(String key : parameter.keySet()){
-			if (key.endsWith("s")) {
-				ids = parameter.get(key).toString().split(",");
-				idAttrName=key.substring(0, key.length()-1);
-				break;
-			}
-		}
+		String id = parameter.get("id").toString();
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(pojoClass);
-		int deleteCount=0;
-		for (String id : ids) {
-			Map<String, Object> thismap=new HashMap<String,Object>();
-			thismap.put(idAttrName, id);
-			Object entity = EntityManager.getEntityByMap(entityName, thismap);
-			if (entityIntercepter != null) {//存储之前调用拦截器
-				entityIntercepter.beforeDelete(entity, thismap, result);
-			}
-			try {
-				if (result.getStatus()) {
-					Integer count =mapper.delete(entity);
-					result.setData(result);
-					deleteCount+= count;
-					if (entityIntercepter != null) {//存储后调用拦截器
-						entityIntercepter.endDelete(entity, thismap, result);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
+		if (entityIntercepter != null) {//存储之前调用拦截器
+			entityIntercepter.beforeDelete(null, parameter, result);
 		}
-		result.setStatus(true);
-		result.setData(deleteCount);
+		int deleteCount=0;
+		try {
+			if (result.getStatus()) {
+				if (id.contains(",")) {//如果删除多个
+					String[] ids = id.split(",");
+					for (String theId : ids) {
+						deleteCount+=mapper.deleteByPrimaryKey(EntityManager.caseType(idField.getType(), theId));
+					}
+				}else{//如果删除一个
+					deleteCount=mapper.deleteByPrimaryKey(EntityManager.caseType(idField.getType(), id));
+				}
+				if (entityIntercepter != null) {//存储后调用拦截器
+					entityIntercepter.endDelete(null, parameter, result);
+				}
+				result.setData(deleteCount);
+				return result;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		result.setStatus(false);
+		result.setData("操作失败");
 		return result;
+	}
+
+	@Override
+	public <T> T selectById(String entityName, Map<String, Object> parameter) {
+		Class<?> pojoClass = InitAplication.pojoMap.get(entityName);
+		Field idField = InitAplication.idFieldMap.get(entityName);
+		Mapper mapper = InitAplication.mapperMap.get(pojoClass);
+		String id = parameter.get("id").toString();
+		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(pojoClass);
+		if (entityIntercepter != null) {//存储之前调用拦截器
+			entityIntercepter.beforeFindEntityOne(null, parameter);
+		}
+		Object entity=null;
+		try {
+			entity = mapper.selectByPrimaryKey(EntityManager.caseType(idField.getType(), id));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (entityIntercepter != null) {
+			entityIntercepter.endFindEntityOne(null, parameter, entity);
+		}
+		return (T) entity;
 	}
 
 }

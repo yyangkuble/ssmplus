@@ -30,7 +30,7 @@ public class EntityManager {
 		return null;
 	}
 
-	private static <T> T caseType(Class<T> t,Object object) throws ParseException {
+	public static <T> T caseType(Class<T> t,Object object) throws ParseException {
 		if (object==null) {
 			return null;
 		}else {

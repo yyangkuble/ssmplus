@@ -76,17 +76,21 @@ public class BaseController {
 		Map<String, Object> map = requestToMap(request);
 		return appService.delete(entityName, map);
 	}
-	@RequestMapping("/deletebyids/{entityName}")
-	public AppResult deletebyids(@PathVariable String entityName,HttpServletRequest request) {
+	@RequestMapping("/deletebyid/{entityName}")
+	public AppResult deletebyid(@PathVariable String entityName,HttpServletRequest request) {
 		Map<String, Object> map = requestToMap(request);
-		return appService.deletebyids(entityName, map);
+		return appService.deletebyid(entityName, map);
 	}
 	@RequestMapping("/find/{entityName}/list")
 	public Object selectEntityList(@PathVariable String entityName,HttpServletRequest request) {
 		Map<String, Object> map = requestToMap(request);
 		return appService.select(entityName, map);
 	}
-	
+	@RequestMapping("/findbyid/{entityName}")
+	public Object selectById(@PathVariable String entityName,HttpServletRequest request) {
+		Map<String, Object> map = requestToMap(request);
+		return appService.selectById(entityName, map);
+	}
 	@RequestMapping("/find/{entityName}/one")
 	public Object selectEntityOne(@PathVariable String entityName,HttpServletRequest request) {
 		Map<String, Object> map = requestToMap(request);

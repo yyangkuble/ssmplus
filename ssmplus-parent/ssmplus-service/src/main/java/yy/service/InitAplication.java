@@ -1,9 +1,13 @@
 package yy.service;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.persistence.Id;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -21,6 +25,7 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 	public static Map<Class<?>, Mapper<?>> mapperMap = new HashMap<Class<?>, Mapper<?>>();
 	public static Map<Class<?>, YyEntityIntercepter<?>> entityIntercepterMap = new HashMap<Class<?>, YyEntityIntercepter<?>>();
 	public static Map<String, YySqlIdInterceptor> sqlIdIntercepterMap = new HashMap<String, YySqlIdInterceptor>();
+	public static Map<String, Field> idFieldMap=new HashMap<String, Field>();
 	
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		// TODO Auto-generated method stub
@@ -40,6 +45,10 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 			Type tkMapperInterfaceType = myMapperInterface.getGenericInterfaces()[0];
 			//获取tk完成的通用Mapper接口里面的pojo实体类
 			Class<?> pojoClass = (Class<?>)((ParameterizedType)tkMapperInterfaceType).getActualTypeArguments()[0];
+			Field field = getEntityId(pojoClass);
+			if (field != null) {
+				idFieldMap.put(pojoClass.getSimpleName(), field);
+			}
 			pojoMap.put(pojoClass.getSimpleName(), pojoClass);
 			System.out.println(pojoClass.getSimpleName()+"自动生成以下接口,欢迎使用");
 			System.out.println("	增加api: save/"+pojoClass.getSimpleName()+"               参数: 实体类"+pojoClass.getSimpleName()+"的所有字段");
@@ -47,7 +56,9 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 			System.out.println("	更新api: update/"+pojoClass.getSimpleName()+"             参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,根据主键进行修改");
 			System.out.println("	更新api: update/"+pojoClass.getSimpleName()+"/withNull    参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,根据主键进行修改, 字段为空也受影响");
 			System.out.println("	删除api: delete/"+pojoClass.getSimpleName()+"             参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行删除,根据id删除只需传入实体类id即可");
+			System.out.println("	删除api: deletebyid/"+pojoClass.getSimpleName()+"         参数: id固定不能缺少,例如id=1, 也支持多个id删除, 例如ids=1,2 中间用,号隔开");
 			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/one           参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找,根据id查询只需传入实体类id即可,必须保证返回的是一行,不然会报错");
+			System.out.println("	查询api: findbyid/"+pojoClass.getSimpleName()+"           参数: id固定不能缺少,例如id=1");
 			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/list          参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找,如需分页,可传入page和size参数,会自动返回分页数据");
 			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/count         参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找,返回{'count':100}格式.\n");
 			mapperMap.put(pojoClass, mapper);
@@ -76,5 +87,21 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 		}
 	}
 	 
+	/**
+	 * 获取pojo类的主键属性
+	 * @param pojoClass
+	 */
+	public Field getEntityId(Class<?> pojoClass) {
+		Field[] fields = pojoClass.getDeclaredFields();
+		for (Field field : fields) {
+			Annotation[] annotations = field.getDeclaredAnnotations();
+			for (Annotation annotation : annotations) {
+				if (annotation instanceof Id) {
+					return field;
+				}
+			}
+		}
+		return null;
+	}
 	
 }
