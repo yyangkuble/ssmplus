@@ -20,6 +20,7 @@ public interface AppService {
 	AppResult updateByPrimaryKeySelective(String entityName, Map<String, Object> parameter);
 
 	AppResult delete(String entityName, Map<String, Object> parameter);
+	AppResult deletebyids(String entityName, Map<String, Object> parameter);
 	<T> Object select(String entityName, Map<String, Object> parameter);
 	<T> Integer selectCount(String entityName, Map<String, Object> parameter);
 	<T> T selectOne(String entityName, Map<String, Object> parameter);

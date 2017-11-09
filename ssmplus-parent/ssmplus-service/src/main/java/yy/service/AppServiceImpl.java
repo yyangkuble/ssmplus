@@ -1,7 +1,10 @@
 package yy.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.annotation.Resource;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -305,6 +308,47 @@ public class AppServiceImpl implements AppService {
 			entityIntercepter.endFindEntityOne(entity, parameter, resultEntity);
 		}
 		return resultEntity;
+	}
+
+	public AppResult deletebyids(String entityName, Map<String, Object> parameter) {
+		AppResult result = new AppResult();
+		Class<?> pojoClass = InitAplication.pojoMap.get(entityName);
+		Mapper mapper = InitAplication.mapperMap.get(pojoClass);
+		String[] ids =null;
+		String idAttrName ="";
+		for(String key : parameter.keySet()){
+			if (key.endsWith("s")) {
+				ids = parameter.get(key).toString().split(",");
+				idAttrName=key.substring(0, key.length()-1);
+				break;
+			}
+		}
+		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(pojoClass);
+		int deleteCount=0;
+		for (String id : ids) {
+			Map<String, Object> thismap=new HashMap<String,Object>();
+			thismap.put(idAttrName, id);
+			Object entity = EntityManager.getEntityByMap(entityName, thismap);
+			if (entityIntercepter != null) {//存储之前调用拦截器
+				entityIntercepter.beforeDelete(entity, thismap, result);
+			}
+			try {
+				if (result.getStatus()) {
+					Integer count =mapper.delete(entity);
+					result.setData(result);
+					deleteCount+= count;
+					if (entityIntercepter != null) {//存储后调用拦截器
+						entityIntercepter.endDelete(entity, thismap, result);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		result.setStatus(true);
+		result.setData(deleteCount);
+		return result;
 	}
 
 }
