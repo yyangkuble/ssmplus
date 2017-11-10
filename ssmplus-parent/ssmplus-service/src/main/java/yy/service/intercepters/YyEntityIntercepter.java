@@ -20,23 +20,10 @@ public class YyEntityIntercepter<T> {
 	public void endSave(T entityParmeter, Map<String, Object> parameter,AppResult result){
 		
 	}
-	
-	public void beforeSaveWithNull(T entityParmeter, Map<String, Object> parameter,AppResult result){
-		
-	}
-	public void endSaveWithNull(T entityParmeter, Map<String, Object> parameter,AppResult result){
-		
-	}
 	public void beforeUpdate(T entityParmeter, Map<String, Object> parameter,AppResult result){
 		
 	}
 	public void endUpdate(T entityParmeter, Map<String, Object> parameter,AppResult result){
-		
-	}
-	public void beforeUpdateWithNull(T entityParmeter, Map<String, Object> parameter,AppResult result){
-		
-	}
-	public void endUpdateWithNull(T entityParmeter, Map<String, Object> parameter,AppResult result){
 		
 	}
 	public void beforeDelete(T entityParmeter, Map<String, Object> parameter,AppResult result){
@@ -46,7 +33,7 @@ public class YyEntityIntercepter<T> {
 		
 	}
 	
-	public void beforeFindEntityList(T entityParmeter, Map<String, Object> parameter) {
+	public void beforeFindList(T entityParmeter, Map<String, Object> parameter) {
 		
 	}
 	/**
@@ -55,14 +42,14 @@ public class YyEntityIntercepter<T> {
 	 * @param parameter
 	 * @param result 如果是分页可以强制转换为PageResult对象,如果不是分页可以强制转换为List<T>
 	 */
-	public void endFindEntityList(T entityParmeter, Map<String, Object> parameter,PageResult pageResult) {
+	public void endFindList(T entityParmeter, Map<String, Object> parameter,PageResult pageResult) {
 		
 	}
-	public void endFindEntityList(T entityParmeter, Map<String, Object> parameter,List<T> list) {
+	public void endFindList(T entityParmeter, Map<String, Object> parameter,List<T> list) {
 		
 	}
 	
-	public void beforeFindEntityOne(T entityParmeter, Map<String, Object> parameter) {
+	public void beforeFindOne(T entityParmeter, Map<String, Object> parameter) {
 		
 	}
 	/**
@@ -71,11 +58,11 @@ public class YyEntityIntercepter<T> {
 	 * @param parameter
 	 * @param result 
 	 */
-	public void endFindEntityOne(T entityParmeter, Map<String, Object> parameter,T result) {
+	public void endFindOne(T entityParmeter, Map<String, Object> parameter,T result) {
 		
 	}
 	
-	public void beforeFindEntityCount(T entityParmeter, Map<String, Object> parameter) {
+	public void beforeFindCount(T entityParmeter, Map<String, Object> parameter) {
 		
 	}
 	/**
@@ -84,7 +71,7 @@ public class YyEntityIntercepter<T> {
 	 * @param parameter
 	 * @param result 
 	 */
-	public void endFindEntityCount(T entityParmeter, Map<String, Object> parameter,Integer result) {
+	public void endFindCount(T entityParmeter, Map<String, Object> parameter,Integer result) {
 		
 	}
 }

@@ -96,7 +96,11 @@ public class BaseController {
 		Map<String, Object> map = requestToMap(request);
 		return appService.selectOne(entityName, map);
 	}
-	
+	@RequestMapping("/findByExample/{entityName}")
+	public Object selectByExample(@PathVariable String entityName,HttpServletRequest request) {
+		Map<String, Object> map = requestToMap(request);
+		return appService.selectByExample(entityName, map);
+	}
 	@RequestMapping("/find/{entityName}/count")
 	public Integer selectEntityCount(@PathVariable String entityName,HttpServletRequest request) {
 		Map<String, Object> map = requestToMap(request);

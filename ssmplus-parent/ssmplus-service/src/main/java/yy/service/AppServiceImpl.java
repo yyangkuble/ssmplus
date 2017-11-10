@@ -15,6 +15,7 @@ import com.github.pagehelper.PageRowBounds;
 import tk.mybatis.mapper.common.Mapper;
 import yy.entity.AppResult;
 import yy.entity.PageResult;
+import yy.service.example.ExampleInvoke;
 import yy.service.intercepters.YyEntityIntercepter;
 import yy.service.intercepters.YySqlIdInterceptor;
 import yy.service.interfaces.AppService;
@@ -116,15 +117,15 @@ public class AppServiceImpl implements AppService {
 		Object entity = EntityManager.getEntityByMap(entityName, parameter);
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(entity.getClass());
 		if (entityIntercepter != null) {//存储之前调用拦截器
-			entityIntercepter.beforeSaveWithNull(entity, parameter, result);
+			entityIntercepter.beforeSave(entity, parameter, result);
 		}
 		try {
 			if (result.getStatus()) {
 				Mapper mapper = InitAplication.mapperMap.get(entity.getClass());
-				int insertCount = mapper.insert(entity);
+				mapper.insert(entity);
 				result.setData(entity);
 				if (entityIntercepter != null) {//存储后调用拦截器
-					entityIntercepter.endSaveWithNull(entity, parameter, result);
+					entityIntercepter.endSave(entity, parameter, result);
 				}
 				return result;
 			}
@@ -168,7 +169,7 @@ public class AppServiceImpl implements AppService {
 		
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(entity.getClass());
 		if (entityIntercepter != null) {//存储之前调用拦截器
-			entityIntercepter.beforeUpdateWithNull(entity, parameter, result);
+			entityIntercepter.beforeUpdate(entity, parameter, result);
 		}
 		try {
 			if (result.getStatus()) {
@@ -176,7 +177,7 @@ public class AppServiceImpl implements AppService {
 				int updateCount = mapper.updateByPrimaryKey(entity);
 				result.setData(updateCount);
 				if (entityIntercepter != null) {//存储后调用拦截器
-					entityIntercepter.endUpdateWithNull(entity, parameter, result);
+					entityIntercepter.endUpdate(entity, parameter, result);
 				}
 				return result;
 			}
@@ -247,7 +248,7 @@ public class AppServiceImpl implements AppService {
 		
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(entity.getClass());
 		if (entityIntercepter != null) {//存储之前调用拦截器
-			entityIntercepter.beforeFindEntityList(entity, parameter);
+			entityIntercepter.beforeFindList(entity, parameter);
 		}
 		Long page=null;
 		Integer size=null;
@@ -269,13 +270,13 @@ public class AppServiceImpl implements AppService {
 			pageResult.setTotal(rowBounds.getTotal());
 			pageResult.setPageCount(pageResult.getTotal()%size==0?pageResult.getTotal()/size:pageResult.getTotal()/size+1);
 			if (entityIntercepter != null) {//存储后调用拦截器
-				entityIntercepter.endFindEntityList(entity, parameter, pageResult);
+				entityIntercepter.endFindList(entity, parameter, pageResult);
 			}
 			return pageResult;
 		}else {
 			List list = mapper.select(entity);
 			if (entityIntercepter != null) {//存储后调用拦截器
-				entityIntercepter.endFindEntityList(entity, parameter, list);
+				entityIntercepter.endFindList(entity, parameter, list);
 			}
 			return list;
 		}
@@ -288,11 +289,11 @@ public class AppServiceImpl implements AppService {
 		
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(entity.getClass());
 		if (entityIntercepter != null) {//存储之前调用拦截器
-			entityIntercepter.beforeFindEntityCount(entity, parameter);
+			entityIntercepter.beforeFindCount(entity, parameter);
 		}
 		int selectCount = mapper.selectCount(entity);
 		if (entityIntercepter != null) {//存储后调用拦截器
-			entityIntercepter.endFindEntityCount(entity, parameter, selectCount);
+			entityIntercepter.endFindCount(entity, parameter, selectCount);
 		}
 		return selectCount;
 	}
@@ -303,11 +304,11 @@ public class AppServiceImpl implements AppService {
 		
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(entity.getClass());
 		if (entityIntercepter != null) {//存储之前调用拦截器
-			entityIntercepter.beforeFindEntityOne(entity, parameter);
+			entityIntercepter.beforeFindOne(entity, parameter);
 		}
 		T resultEntity = mapper.selectOne(entity);
 		if (entityIntercepter != null) {//存储后调用拦截器
-			entityIntercepter.endFindEntityOne(entity, parameter, resultEntity);
+			entityIntercepter.endFindOne(entity, parameter, resultEntity);
 		}
 		return resultEntity;
 	}
@@ -333,10 +334,10 @@ public class AppServiceImpl implements AppService {
 				}else{//如果删除一个
 					deleteCount=mapper.deleteByPrimaryKey(EntityManager.caseType(idField.getType(), id));
 				}
+				result.setData(deleteCount);
 				if (entityIntercepter != null) {//存储后调用拦截器
 					entityIntercepter.endDelete(null, parameter, result);
 				}
-				result.setData(deleteCount);
 				return result;
 			}
 		} catch (Exception e) {
@@ -356,7 +357,7 @@ public class AppServiceImpl implements AppService {
 		String id = parameter.get("id").toString();
 		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(pojoClass);
 		if (entityIntercepter != null) {//存储之前调用拦截器
-			entityIntercepter.beforeFindEntityOne(null, parameter);
+			entityIntercepter.beforeFindOne(null, parameter);
 		}
 		Object entity=null;
 		try {
@@ -366,9 +367,49 @@ public class AppServiceImpl implements AppService {
 			e.printStackTrace();
 		}
 		if (entityIntercepter != null) {
-			entityIntercepter.endFindEntityOne(null, parameter, entity);
+			entityIntercepter.endFindOne(null, parameter, entity);
 		}
 		return (T) entity;
 	}
-
+	
+	public <T> Object  selectByExample(String entityName, Map<String, Object> parameter) {
+		T entity = (T) EntityManager.getEntityByMap(entityName, parameter);
+		Mapper<T> mapper = (Mapper<T>) InitAplication.mapperMap.get(entity.getClass());
+		
+		YyEntityIntercepter<Object> entityIntercepter = (YyEntityIntercepter<Object>) InitAplication.entityIntercepterMap.get(entity.getClass());
+		if (entityIntercepter != null) {//存储之前调用拦截器
+			entityIntercepter.beforeFindList(entity, parameter);
+		}
+		Long page=null;
+		Integer size=null;
+		Object pageObj = parameter.get("page");
+		Object sizeObj = parameter.get("size");
+		if (pageObj != null && !pageObj.equals("")) {
+			page = Long.valueOf(String.valueOf(pageObj));
+			if (sizeObj != null && !sizeObj.equals("")) {
+				size = Integer.valueOf(String.valueOf(sizeObj));
+			}else{
+				size=10;
+			}
+			PageRowBounds rowBounds = new PageRowBounds((int) ((page-1)*size), size);
+			List<T> list = mapper.selectByExampleAndRowBounds(ExampleInvoke.invoke(parameter, entity), rowBounds);
+			PageResult pageResult = new PageResult();
+			pageResult.setData(list);
+			pageResult.setCurrentPage(page);
+			pageResult.setSize(size);
+			pageResult.setTotal(rowBounds.getTotal());
+			pageResult.setPageCount(pageResult.getTotal()%size==0?pageResult.getTotal()/size:pageResult.getTotal()/size+1);
+			if (entityIntercepter != null) {//存储后调用拦截器
+				entityIntercepter.endFindList(entity, parameter, pageResult);
+			}
+			return pageResult;
+		}else {
+			List list = mapper.selectByExample(ExampleInvoke.invoke(parameter, entity));
+			if (entityIntercepter != null) {//存储后调用拦截器
+				entityIntercepter.endFindList(entity, parameter, list);
+			}
+			return list;
+		}
+	}
+	
 }

@@ -25,6 +25,8 @@ public interface AppService {
 	<T> Integer selectCount(String entityName, Map<String, Object> parameter);
 	<T> T selectOne(String entityName, Map<String, Object> parameter);
 	<T> T selectById(String entityName, Map<String, Object> parameter);
+	<T> Object selectByExample(String entityName, Map<String, Object> parameter);
+
 
 	
 }

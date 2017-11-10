@@ -2,6 +2,7 @@ package yy.service;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -16,6 +17,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import com.alibaba.fastjson.JSON;
 
 import tk.mybatis.mapper.common.Mapper;
+import yy.service.example.ExampleModel;
+import yy.service.example.YyExample;
 import yy.service.intercepters.YyEntityIntercepter;
 import yy.service.intercepters.YySqlIdInterceptor;
 
@@ -26,7 +29,7 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 	public static Map<Class<?>, YyEntityIntercepter<?>> entityIntercepterMap = new HashMap<Class<?>, YyEntityIntercepter<?>>();
 	public static Map<String, YySqlIdInterceptor> sqlIdIntercepterMap = new HashMap<String, YySqlIdInterceptor>();
 	public static Map<String, Field> idFieldMap=new HashMap<String, Field>();
-	
+	public static Map<String, ExampleModel> exampleMethodMap=new HashMap<String, ExampleModel>();
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		// TODO Auto-generated method stub
 		System.out.println("以下是sqlId接口,欢迎使用");
@@ -60,7 +63,8 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/one           参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找,根据id查询只需传入实体类id即可,必须保证返回的是一行,不然会报错");
 			System.out.println("	查询api: findbyid/"+pojoClass.getSimpleName()+"           参数: id固定不能缺少,例如id=1");
 			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/list          参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找,如需分页,可传入page和size参数,会自动返回分页数据");
-			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/count         参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找,返回{'count':100}格式.\n");
+			System.out.println("	查询api: find/"+pojoClass.getSimpleName()+"/count         参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,会自动拼接where条件,进行查找");
+			System.out.println("	查询api: findByExample/"+pojoClass.getSimpleName()+"      参数: 实体类"+pojoClass.getSimpleName()+"的所有字段,继承YyExample接口,并创建void方法,手工编写example条件\n");
 			mapperMap.put(pojoClass, mapper);
 		}
 		//添加entityInterceptor
@@ -85,8 +89,43 @@ public class InitAplication implements ApplicationListener<ContextRefreshedEvent
 			System.out.println("拦截器:"+sqlIdInterceptorForFind.getClass()+"已生效,sqlId: "+sqlMapperId);
 			sqlIdIntercepterMap.put(sqlMapperId.toLowerCase(), sqlIdInterceptorForFind);
 		}
+		//注册example方法
+		Map<String, YyExample> exampleService = context.getBeansOfType(YyExample.class);
+		for (YyExample example : exampleService.values()) {
+			Method[] methods = example.getClass().getMethods();
+			for (Method method : methods) {
+				Class<?>[] parameterTypes = method.getParameterTypes();
+				if (parameterTypes.length>0) {//如果有参数
+					String entityName="";
+					boolean isExampleMethod = false;
+					Class<?> exampleClass=null;
+					String[] parameterTypesStr=new String[parameterTypes.length];
+					for(int i=0;i<parameterTypes.length;i++){
+						Class<?> class1 = parameterTypes[i];
+						if (class1.getSimpleName().contains("Example")) {
+							isExampleMethod=true;
+							parameterTypesStr[i]="example";
+							entityName=class1.getSimpleName().substring(0, class1.getSimpleName().length()-7);
+							exampleClass=class1;
+						}else if (class1.isAssignableFrom(Map.class)) {
+							parameterTypesStr[i]="map";
+						}else{
+							parameterTypesStr[i]="entity";
+							entityName=class1.getSimpleName();//覆盖截取的实体类名
+						}
+					}
+					if (isExampleMethod) {//如果是一个实体类example方法
+						ExampleModel exampleModel = new ExampleModel();
+						exampleModel.setExampleService(example);
+						exampleModel.setMethod(method);
+						exampleModel.setParameterTypesStr(parameterTypesStr);
+						exampleModel.setExampleClass(exampleClass);
+						exampleMethodMap.put(entityName, exampleModel);
+					}
+				}
+			}
+		}
 	}
-	 
 	/**
 	 * 获取pojo类的主键属性
 	 * @param pojoClass
